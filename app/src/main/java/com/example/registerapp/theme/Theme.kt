@@ -1,5 +1,6 @@
 package com.example.registerapp.theme
 
+import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,34 +10,56 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.example.roomguideandroid.ui.theme.DarkPurple
+import com.example.roomguideandroid.ui.theme.DarkerPurpleGrey
+import com.example.roomguideandroid.ui.theme.LightPurple
+import com.example.roomguideandroid.ui.theme.LightPurpleLight
 import com.example.roomguideandroid.ui.theme.Pink40
 import com.example.roomguideandroid.ui.theme.Pink80
+import com.example.roomguideandroid.ui.theme.Purple
 import com.example.roomguideandroid.ui.theme.Purple40
 import com.example.roomguideandroid.ui.theme.Purple80
 import com.example.roomguideandroid.ui.theme.PurpleGrey40
 import com.example.roomguideandroid.ui.theme.PurpleGrey80
 import com.example.roomguideandroid.ui.theme.Typography
+import com.example.roomguideandroid.ui.theme.White
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40,
+
+    background = Purple,
+    surface = DarkerPurpleGrey,
+
+    onPrimary = Purple40,
+    onSecondary = PurpleGrey40,
+    onTertiary = Pink40,
+
+    onBackground = White,
+    onSurface = White,
+
+
+
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80,
+
+    background = LightPurple,
+    surface = LightPurpleLight,
+
+    onPrimary = White,
+    onSecondary = White,
+    onTertiary = White,
+
+    onBackground = DarkPurple,
+    onSurface = DarkPurple
+
+
 )
 
 @Composable

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.registerapp.screens.LoginScreen
+import com.example.registerapp.screens.RegisterScreen
 import com.example.registerapp.theme.RegisterAppTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
             RegisterAppTheme {
                 Scaffold(modifier = Modifier.fillMaxWidth()){  innerPadding ->
 
-                    LoginScreen(modifier = Modifier.padding(innerPadding))
+                    RegisterScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }

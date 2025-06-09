@@ -1,6 +1,7 @@
 package com.example.registerapp.screens.design
 
 import androidx.compose.animation.core.Spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,8 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -36,7 +39,7 @@ fun MyTextField(
     modifier: Modifier = Modifier,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
-    trailingText: Spring? = null,
+    trailingText: String? = null,
     textFieldState: TextFieldState,
     hint: String,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -76,7 +79,7 @@ fun TextTextField(
     modifier: Modifier = Modifier,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
-    trailingText: Spring? = null,
+    trailingText: String? = null,
     textFieldState: TextFieldState,
     hint: String,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -105,12 +108,14 @@ fun TextTextField(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.5f),
                             modifier = Modifier.clickable { onLeadingClick() }
                         )
+                        Spacer(modifier = Modifier.width(16.dp))
                     }
 
                     Box(
                         modifier = Modifier
                             .weight(1f)
                     ) {
+                        innerTextField()
                         if (textFieldState.text.isEmpty()) {
                             Text(
                                 text = hint,
@@ -124,7 +129,7 @@ fun TextTextField(
                         Icon(
                             imageVector = trailingIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.5f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(0.5f),
                             modifier = Modifier
                                 .padding(end = 4.dp)
                                 .clickable { onTrailingClick() }
@@ -155,7 +160,7 @@ fun PasswordTextField(
     modifier: Modifier = Modifier,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
-    trailingText: Spring? = null,
+    trailingText: String? = null,
     textFieldState: TextFieldState,
     hint: String,
     onLeadingClick: () -> Unit = {},
@@ -180,15 +185,18 @@ fun PasswordTextField(
                         Icon(
                             imageVector = leadingIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.5f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(0.5f),
                             modifier = Modifier.clickable { onLeadingClick() }
                         )
+                        Spacer(modifier = Modifier.width(16.dp))
+
                     }
 
                     Box(
                         modifier = Modifier
                             .weight(1f)
                     ) {
+                        innerTextField()
                         if (textFieldState.text.isEmpty()) {
                             Text(
                                 text = hint,
@@ -196,6 +204,7 @@ fun PasswordTextField(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
+
                     }
 
                     if (trailingIcon != null) {
@@ -220,7 +229,6 @@ fun PasswordTextField(
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
-
                 HorizontalDivider(modifier = Modifier.alpha(0.7f))
             }
         }

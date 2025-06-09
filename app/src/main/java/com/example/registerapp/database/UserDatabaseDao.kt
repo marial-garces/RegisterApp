@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Dao
 
+@Dao
 interface UserDatabaseDao {
     @Insert
     suspend fun insertUser(user: User)
