@@ -25,26 +25,6 @@ import com.example.roomguideandroid.ui.theme.Typography
 import com.example.roomguideandroid.ui.theme.White
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-
-    background = Purple,
-    surface = DarkerPurpleGrey,
-
-    onPrimary = Purple40,
-    onSecondary = PurpleGrey40,
-    onTertiary = Pink40,
-
-    onBackground = White,
-    onSurface = White,
-
-
-
-)
-
-private val LightColorScheme = lightColorScheme(
-
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80,
@@ -58,6 +38,28 @@ private val LightColorScheme = lightColorScheme(
 
     onBackground = DarkPurple,
     onSurface = DarkPurple
+
+
+
+
+
+)
+
+private val LightColorScheme = lightColorScheme(
+
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40,
+
+    background = Purple,
+    surface = DarkerPurpleGrey,
+
+    onPrimary = Purple40,
+    onSecondary = PurpleGrey40,
+    onTertiary = Pink40,
+
+    onBackground = White,
+    onSurface = White,
 
 
 )

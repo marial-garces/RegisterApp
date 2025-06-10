@@ -51,8 +51,10 @@ fun RegisterScreen(
         Column(
 //            horizontalAlignment = CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.padding(16.dp))
+
             Image(
-                painter = painterResource(id = R.drawable.sign_up_icon),
+                painter = painterResource(id = R.drawable.working_w_dog),
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
                 modifier = Modifier
@@ -61,10 +63,10 @@ fun RegisterScreen(
                     .aspectRatio(1f),
             )
 
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.padding(1.dp))
 
             Text(
-                text = "Register",
+                text = "Sign Up",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 30.sp
             )
@@ -86,7 +88,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(1.dp))
 
         Text(
-            text = "Or, register with..",
+            text = "Or, sign up with..",
             fontSize = 16.sp,
             modifier = Modifier
                 .align(CenterHorizontally)
@@ -118,6 +120,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+
         Button(
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,7 +128,7 @@ fun RegisterScreen(
             onClick = { /*TODO*/ }
         ) {
             Text(
-                text = "Login",
+                text = "Sign Up",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
@@ -137,7 +140,7 @@ fun RegisterScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = 1.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

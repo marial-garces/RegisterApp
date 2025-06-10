@@ -54,7 +54,7 @@ plugins {
                 implementation("androidx.compose.material3:material3-window-size-class:1.3.2")
                 implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha15")
                 implementation(libs.androidx.foundation)
-                implementation ("androidx.compose.material:material-icons-extended:1.6.7")
+                implementation ("androidx.compose.material:material-icons-extended:1.7.8")
                 implementation ("androidx.compose.ui:ui:1.8.2")
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.coroutines.android)

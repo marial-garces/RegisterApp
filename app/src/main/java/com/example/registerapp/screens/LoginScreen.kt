@@ -3,6 +3,7 @@ package com.example.registerapp.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -50,8 +51,10 @@ fun LoginScreen(
         Column(
 //            horizontalAlignment = CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.padding(1.dp))
+
             Image(
-                painter = painterResource(id = R.drawable.log_in),
+                painter = painterResource(id = R.drawable.team_brainstorm),
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
                 modifier = Modifier
@@ -69,6 +72,8 @@ fun LoginScreen(
             )
 
         }
+
+        Spacer(modifier = Modifier.padding(2.dp))
 
         MyTextField(
             textFieldState = TextFieldState(),

@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.registerapp.screens.LoginScreen
 import com.example.registerapp.screens.RegisterScreen
+import com.example.registerapp.screens.WelcomeScreen
 import com.example.registerapp.theme.RegisterAppTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
