@@ -1,5 +1,6 @@
 package com.example.registerapp.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,26 +32,77 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.alpha
 import com.example.registerapp.screens.design.AuthOptions
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.registerapp.database.UserDatabase
+import com.example.registerapp.database.UserRepository
+import com.example.registerapp.database.viewModels.AuthViewModels
+import com.example.registerapp.screens.Routes.EDIT_USER
+import com.example.registerapp.screens.Routes.LOGIN
+import com.example.registerapp.screens.design.TextTextField
 
 
 @Composable
 fun RegisterScreen(
-    modifier: Modifier = Modifier
+    navController: NavController
 ) {
+    val context = LocalContext.current.applicationContext
+    val dao = UserDatabase.getInstance(context).userDao()
+    val repo = UserRepository(dao)
+
+    val authVm: AuthViewModels = viewModel(
+        key = "AuthViewModel",
+        factory = AuthViewModels.Factory(repo)
+    )
+
+    val usernameState = remember { mutableStateOf(TextFieldState()) }
+    val emailState = remember { mutableStateOf(TextFieldState()) }
+    val passwordState = remember { mutableStateOf(TextFieldState()) }
+
+    val registerResult = authVm.registerResult.observeAsState()
+
+    LaunchedEffect(registerResult) {
+        registerResult.value?.let { result ->
+            if (result.isSuccess) {
+                val userId = result.getOrNull()
+                Toast.makeText(
+                    context,
+                    "Registration successful! User ID: ${result.getOrNull()}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                navController.navigate(LOGIN)
+            } else {
+                Toast.makeText(
+                    context,
+                    "Registration failed: ${result.exceptionOrNull()?.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(
-//            horizontalAlignment = CenterHorizontally
-        ) {
+        Column() {
             Spacer(modifier = Modifier.padding(16.dp))
 
             Image(
@@ -68,52 +120,32 @@ fun RegisterScreen(
             Text(
                 text = "Sign Up",
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 30.sp
+                fontSize = 30.sp,
+                color = Color(0xFF332D41)
             )
 
         }
 
-        Spacer(modifier = Modifier.height(1.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround,
-        ) {
-            AuthOptions(image = R.drawable.google, tint = Color.Unspecified)
-            AuthOptions(image = R.drawable.facebok, tint = Color.Unspecified)
-            AuthOptions(image = R.drawable.apple, tint = Color.Unspecified)
-        }
-
-        Spacer(modifier = Modifier.height(1.dp))
-
-        Text(
-            text = "Or, sign up with..",
-            fontSize = 16.sp,
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .alpha(0.7f)
-        )
-
-        Spacer(modifier = Modifier.height(1.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         MyTextField(
-            textFieldState = TextFieldState(),
+            textFieldState = usernameState.value,
+            hint = "Username",
+            leadingIcon = Icons.Outlined.AccountCircle,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        MyTextField(
+            textFieldState = emailState.value,
             hint = "Email",
             leadingIcon = Icons.Outlined.Email,
             keyboardType = KeyboardType.Email,
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier.fillMaxWidth(),
+
+            )
 
         MyTextField(
-            textFieldState = TextFieldState(),
-            hint = "Username",
-            leadingIcon = Icons.Outlined.AccountCircle,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        MyTextField(
-            textFieldState = TextFieldState(),
+            textFieldState = passwordState.value,
             hint = "Password",
             leadingIcon = Icons.Outlined.Lock,
             isPassword = true,
@@ -125,16 +157,53 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 10.dp),
-            onClick = { /*TODO*/ }
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF6570cd)
+            ),
+            onClick = {
+                authVm.register(
+                    usernameState.value.text.toString(),
+                    emailState.value.text.toString(),
+                    passwordState.value.text.toString(),
+                )
+            }
         ) {
             Text(
                 text = "Sign Up",
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(PaddingValues(vertical = 8.dp, horizontal = 16.dp))
             )
         }
+
+        Spacer(modifier = Modifier.height(1.dp))
+
+        Text(
+            text = "Or, sign up with..",
+            fontSize = 16.sp,
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .alpha(0.7f),
+            color = Color(0xFF332D41)
+        )
+
+        Spacer(modifier = Modifier.height(1.dp))
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround,
+        ) {
+            AuthOptions(image = R.drawable.google, tint = Color.Unspecified)
+            AuthOptions(image = R.drawable.facebok, tint = Color.Unspecified)
+            AuthOptions(image = R.drawable.apple, tint = Color.Unspecified)
+        }
+
+
+
+        Spacer(modifier = Modifier.height(1.dp))
 
 
         Row(
@@ -152,9 +221,9 @@ fun RegisterScreen(
             Text(
                 text = "Log in",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.secondary,
+                color = Color(0xFF332D41),
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable {/* todo */}
+                modifier = Modifier.clickable { navController.navigate(LOGIN) }
             )
         }
 

@@ -5,18 +5,19 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Dao
+import androidx.room.Update
 
 @Dao
 interface UserDatabaseDao {
-    @Insert
-    suspend fun insertUser(user: User)
 
-    @Delete
-    suspend fun deleteUser(user: User)
+    @Insert suspend fun insert(user: User): Long
+    @Update suspend fun update(user: User)
+    @Delete suspend fun delete(user: User)
 
-    @Query("SELECT * FROM user_table ORDER BY userId DESC")
-    fun getAllUsers(): LiveData<List<User>>
+    @Query("SELECT * FROM user_table WHERE email = :email AND password = :password LIMIT 1")
+    suspend fun login(email: String, password: String): User?
 
-    @Query("SELECT * FROM user_table WHERE user_name LIKE :userName ")
-    suspend fun getUserName(userName: String): User
+    @Query("SELECT * FROM user_table WHERE email = :email LIMIT 1")
+    suspend fun findByEmail(email: String): User?
+
 }

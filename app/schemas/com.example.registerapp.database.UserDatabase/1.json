@@ -2,16 +2,17 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3cf4b020d267c64a301e2c47375fbf65",
+    "identityHash": "67134fc27e408d7f33cc22d48ab1696a",
     "entities": [
       {
         "tableName": "user_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` INTEGER PRIMARY KEY AUTOINCREMENT, `email` TEXT NOT NULL, `user_name` TEXT NOT NULL, `password_num` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `email` TEXT NOT NULL, `user_name` TEXT NOT NULL, `password` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "userId",
             "columnName": "userId",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "email",
@@ -27,8 +28,8 @@
           },
           {
             "fieldPath": "password",
-            "columnName": "password_num",
-            "affinity": "INTEGER",
+            "columnName": "password",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -37,12 +38,23 @@
           "columnNames": [
             "userId"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_user_table_email",
+            "unique": false,
+            "columnNames": [
+              "email"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_table_email` ON `${TABLE_NAME}` (`email`)"
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3cf4b020d267c64a301e2c47375fbf65')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '67134fc27e408d7f33cc22d48ab1696a')"
     ]
   }
 }

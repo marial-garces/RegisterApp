@@ -1,4 +1,4 @@
-package com.example.roomguideandroid.ui.theme
+package com.example.registerapp.theme
 
 import androidx.compose.ui.graphics.Color
 
