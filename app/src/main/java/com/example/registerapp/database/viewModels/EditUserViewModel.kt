@@ -17,11 +17,9 @@ class EditUserViewModel(private val repo: UserRepository): ViewModel(){
     private val _currentUser = MutableLiveData<User?>()
     val currentUser = _currentUser
 
-    fun loadById(userId: Long) {
-        viewModelScope.launch {
-            val user = repo.getUserById(userId)
-            _currentUser.postValue(user)
-        }
+    fun loadById(userId: Long) = viewModelScope.launch {
+        val user = repo.getUserById(userId)
+        _currentUser.postValue(user)
     }
 
     fun update(userName: String, email: String, password: String) = viewModelScope.launch {
@@ -51,25 +49,3 @@ class EditUserViewModel(private val repo: UserRepository): ViewModel(){
 
 
 
-//class EditUserViewModel(application: Application): AndroidViewModel(application) {
-//    private val repo = UserRepository(UserDatabase.getInstance(application).userDao())
-//    val currentUser = MutableLiveData<User>()
-//
-//    fun loadUser(user: User){
-//        currentUser.postValue(user)
-//    }
-//
-//    fun update(userName: String, email: String, password: String) = viewModelScope.launch {
-//        currentUser.value?.let {
-//            val updated = it.copy(userName = userName, email = email, password = password)
-//            repo.update(updated)
-//            currentUser.postValue(updated)
-//        }
-//    }
-//
-//    fun logout() = viewModelScope.launch {
-//        currentUser.value?.let {
-//            repo.delete(it)
-//        }
-//    }
-//}

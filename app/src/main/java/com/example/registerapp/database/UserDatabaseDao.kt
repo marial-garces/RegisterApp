@@ -21,7 +21,7 @@ interface UserDatabaseDao {
     suspend fun findByEmail(email: String): User?
 
     @Query("SELECT * FROM user_table WHERE userId = :userId LIMIT 1")
-    fun getUserById(userId: Long): User?
+    suspend fun getUserById(userId: Long): User?
 
     @Query("SELECT * FROM user_table")
     fun getAllUsers(): LiveData<List<User>>

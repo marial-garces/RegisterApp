@@ -17,9 +17,7 @@ class UserRepository(private val dao: UserDatabaseDao) {
         }
     }
 
-    fun getUserById(userId: Long): User?{
-        return dao.getUserById(userId)
-    }
+    suspend fun getUserById(userId: Long): User? = dao.getUserById(userId)
 
 
     suspend fun update(user: User) = dao.update(user)
