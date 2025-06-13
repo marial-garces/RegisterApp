@@ -22,12 +22,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.registerapp.database.viewModels.EditUserViewModel
 import com.example.registerapp.screens.Routes.WELCOME
 
 @Composable
 fun EditUserScreen(
-    modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    editVM: EditUserViewModel
 ) {
     Column(
         modifier = Modifier

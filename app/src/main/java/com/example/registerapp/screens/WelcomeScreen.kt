@@ -30,7 +30,6 @@ import com.example.registerapp.R
 
 @Composable
 fun WelcomeScreen(
-    modifier: Modifier = Modifier,
     navController: NavController
 ) {
     Column(
