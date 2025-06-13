@@ -6,7 +6,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities =[User::class], version = 1, exportSchema = true,)
+@Database(entities =[User::class], version = 2, exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)]
+)
 
 abstract class UserDatabase: RoomDatabase() {
     abstract fun userDao(): UserDatabaseDao
@@ -17,7 +19,7 @@ abstract class UserDatabase: RoomDatabase() {
 
         fun getInstance(context: Context): UserDatabase =
             INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
+                INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     UserDatabase::class.java,
                     "user_database"

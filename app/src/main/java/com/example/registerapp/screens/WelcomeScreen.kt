@@ -30,6 +30,7 @@ import com.example.registerapp.R
 
 @Composable
 fun WelcomeScreen(
+    modifier: Modifier = Modifier,
     navController: NavController
 ) {
     Column(
@@ -41,7 +42,7 @@ fun WelcomeScreen(
                         Color(0xFFCCC2DC),
                         Color(0xFFFEF7FF),
                         Color(0xFFFEF7FF),
-                        )
+                    )
                 )
             ),
         verticalArrangement = Arrangement.SpaceEvenly
@@ -59,7 +60,7 @@ fun WelcomeScreen(
                 .padding(bottom = 1.dp)
                 .align(Alignment.CenterHorizontally),
             color = Color(0xFF332D41)
-            )
+        )
         Text(
             text = "Join me on this journey of learning and " +
                     "exploring the world of Android development!",
@@ -79,7 +80,7 @@ fun WelcomeScreen(
                 .fillMaxWidth()
                 .aspectRatio(1f),
             alignment = Alignment.Center,
-            )
+        )
 
         Button(
             modifier = Modifier

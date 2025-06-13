@@ -28,13 +28,17 @@ import com.example.registerapp.R
 import com.example.registerapp.screens.design.MyTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.alpha
 import com.example.registerapp.screens.design.AuthOptions
 import androidx.compose.ui.graphics.Color
@@ -44,28 +48,28 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.registerapp.database.UserDatabase
 import com.example.registerapp.database.UserRepository
-import com.example.registerapp.database.viewModels.AuthViewModelFactory
 import com.example.registerapp.database.viewModels.AuthViewModels
+import com.example.registerapp.screens.Routes.EDIT_USER
 import com.example.registerapp.screens.Routes.LOGIN
+import com.example.registerapp.screens.design.TextTextField
 
 
 @Composable
 fun RegisterScreen(
-    navController: NavController,
-    authVM: AuthViewModels
+    navController: NavController
 ) {
     val context = LocalContext.current.applicationContext
-    val dao = UserDatabase.getInstance(context).userDao()
+    val dao = UserDatabase.getInstance(context.applicationContext).userDao()
     val repo = UserRepository(dao)
 
     val authVm: AuthViewModels = viewModel(
         key = "AuthViewModel",
-        factory = AuthViewModelFactory(repo)
+        factory = AuthViewModels.Factory(repo)
     )
 
-    val usernameState = remember { mutableStateOf("") }
-    val emailState = remember { mutableStateOf("") }
-    val passwordState = remember { mutableStateOf("") }
+    val usernameState = remember { mutableStateOf(TextFieldState()) }
+    val emailState = remember { mutableStateOf(TextFieldState()) }
+    val passwordState = remember { mutableStateOf(TextFieldState()) }
 
     val registerResult = authVm.registerResult.observeAsState()
 
@@ -125,14 +129,14 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(5.dp))
 
         MyTextField(
-            textFieldState = TextFieldState,
+            textFieldState = usernameState.value,
             hint = "Username",
             leadingIcon = Icons.Outlined.AccountCircle,
             modifier = Modifier.fillMaxWidth(),
         )
 
         MyTextField(
-            textFieldState = TextFieldState,
+            textFieldState = emailState.value,
             hint = "Email",
             leadingIcon = Icons.Outlined.Email,
             keyboardType = KeyboardType.Email,
@@ -141,7 +145,7 @@ fun RegisterScreen(
             )
 
         MyTextField(
-            textFieldState = TextFieldState,
+            textFieldState = passwordState.value,
             hint = "Password",
             leadingIcon = Icons.Outlined.Lock,
             isPassword = true,
@@ -157,6 +161,11 @@ fun RegisterScreen(
                 containerColor = Color(0xFF6570cd)
             ),
             onClick = {
+                authVm.register(
+                    usernameState.value.text.toString(),
+                    emailState.value.text.toString(),
+                    passwordState.value.text.toString(),
+                )
                 navController.navigate(LOGIN)
             }
         ) {

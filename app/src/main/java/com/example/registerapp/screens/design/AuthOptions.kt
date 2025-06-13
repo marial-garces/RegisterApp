@@ -43,7 +43,7 @@ fun AuthOptions(
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = Modifier.size(30.dp)
-                )
+            )
         }else {
             Icon(
                 painter = painterResource(image),

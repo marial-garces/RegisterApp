@@ -1,8 +1,11 @@
 package com.example.registerapp.screens
 
+import android.util.Log.e
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -32,46 +35,51 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.alpha
 import com.example.registerapp.screens.design.AuthOptions
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.registerapp.database.UserDatabase
+import com.example.registerapp.database.UserRepository
 import com.example.registerapp.database.viewModels.AuthViewModels
 import com.example.registerapp.screens.Routes.EDIT_USER
+import com.example.registerapp.screens.Routes.LOGIN
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    authVM: AuthViewModels,
 ) {
-//    val context = LocalContext.current.applicationContext
-//    val dao = UserDatabase.getInstance(context).userDao()
-//    val repo = UserRepository(dao)
-//    val authVm = viewModel<AuthViewModels>(
-//        key = "authViewModel",
-//        factory = AuthViewModels.Factory(repo)
-//    )
-//
-//    val emailState = remember { mutableStateOf(TextFieldState()) }
-//    val passwordState = remember { mutableStateOf(TextFieldState()) }
-//
-//    val loginResult = authVm.loginResult.observeAsState()
-//
-//    LaunchedEffect(loginResult) {
-//             loginResult.value?.let { result ->
-//                 if (result.isSuccess) {
-//                     val user = result.getOrNull()
-//                     navController.navigate("${EDIT_USER}/${user?.userId}")
-//                 } else {
-//                     Toast.makeText(
-//                         context,
-//                         "Login failed",
-//                         Toast.LENGTH_SHORT
-//                     ).show()
-//                 }
-//             }
-//         }
+    val context = LocalContext.current.applicationContext
+    val dao = UserDatabase.getInstance(context.applicationContext).userDao()
+    val repo = UserRepository(dao)
+    val authVm = viewModel<AuthViewModels>(
+        key = "authViewModel",
+        factory = AuthViewModels.Factory(repo)
+    )
+
+    val emailState = remember { mutableStateOf(TextFieldState()) }
+    val passwordState = remember { mutableStateOf(TextFieldState()) }
+
+    val loginResult = authVm.loginResult.observeAsState()
+
+    loginResult.value?.let { result ->
+        if (result.isSuccess) {
+            val user = result.getOrNull()!!
+            navController.navigate("EDIT_USER/${user.userId}"){
+                popUpTo(LOGIN){inclusive = true }
+            }
+        } else {
+            Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
 
     Column(
@@ -105,22 +113,22 @@ fun LoginScreen(
         Spacer(modifier = Modifier.padding(2.dp))
 
         MyTextField(
-                textFieldState = TextFieldState,
-                hint = "Email",
-                leadingIcon = Icons.Outlined.Email,
-                trailingIcon = Icons.Outlined.Check,
-                keyboardType = KeyboardType.Email,
-                modifier = Modifier.fillMaxWidth()
-            )
+            textFieldState = emailState.value,
+            hint = "Email",
+            leadingIcon = Icons.Outlined.Email,
+            trailingIcon = Icons.Outlined.Check,
+            keyboardType = KeyboardType.Email,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            MyTextField(
-                textFieldState = TextFieldState,
-                hint = "Password",
-                leadingIcon = Icons.Outlined.Lock,
-                trailingText = "Forgot?",
-                isPassword = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+        MyTextField(
+            textFieldState = passwordState.value,
+            hint = "Password",
+            leadingIcon = Icons.Outlined.Lock,
+            trailingText = "Forgot?",
+            isPassword = true,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Button(
             modifier = Modifier
@@ -130,7 +138,10 @@ fun LoginScreen(
                 containerColor = Color(0xFF6570cd)
             ),
             onClick = {
-                navController.navigate(EDIT_USER)
+                authVm.login(
+                    email = emailState.value.text.toString(),
+                    password = passwordState.value.text.toString()
+                )
             }
         ) {
             Text(
