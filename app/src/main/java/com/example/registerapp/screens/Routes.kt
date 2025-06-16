@@ -5,4 +5,5 @@ object Routes {
     var LOGIN = "login"
     var REGISTER = "register"
     var EDIT_USER = "edit_user"
+    var DASHBOARD = "dashboard"
 }

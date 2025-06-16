@@ -22,10 +22,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.registerapp.database.UserDatabase
 import com.example.registerapp.database.UserDatabaseDao
+import com.example.registerapp.screens.DashboardScreen
 import com.example.registerapp.screens.EditUserScreen
 import com.example.registerapp.screens.LoginScreen
 import com.example.registerapp.screens.RegisterScreen
 import com.example.registerapp.screens.Routes
+import com.example.registerapp.screens.Routes.DASHBOARD
 import com.example.registerapp.screens.Routes.EDIT_USER
 import com.example.registerapp.screens.Routes.LOGIN
 import com.example.registerapp.screens.Routes.REGISTER
@@ -46,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = WELCOME,
+                    startDestination = DASHBOARD,
                     builder = {
                         composable(WELCOME) {
                             WelcomeScreen(
@@ -70,13 +72,13 @@ class MainActivity : AppCompatActivity() {
                             val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
                             EditUserScreen(navController = navController,userId = userId)
                         }
+                        composable(DASHBOARD) {
+                            DashboardScreen(
+                                navController = navController)
+                        }
+
                     }
                 )
-
-//                Scaffold(modifier = Modifier.fillMaxWidth()){  innerPadding ->
-//
-//                    RegisterScreen(modifier = Modifier.padding(innerPadding))
-//                }
             }
         }
     }
