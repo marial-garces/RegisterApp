@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     id("com.google.devtools.ksp") version "2.1.21-2.0.1"
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.21"
+    id ("kotlin-parcelize")
 
 }
 
@@ -71,10 +72,7 @@ dependencies {
     implementation(libs.androidx.runtime.rxjava2)
     implementation(libs.androidx.adaptive)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -84,6 +82,7 @@ dependencies {
 
     implementation ("at.favre.lib:bcrypt:0.9.0")
     implementation ("androidx.compose.runtime:runtime-livedata:1.8.2")
+    implementation ("com.google.android.material:material:1.9.0")
 
 
 }

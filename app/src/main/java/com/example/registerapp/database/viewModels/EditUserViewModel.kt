@@ -17,9 +17,11 @@ class EditUserViewModel(private val repo: UserRepository): ViewModel(){
     private val _currentUser = MutableLiveData<User?>()
     val currentUser = _currentUser
 
-    fun loadById(userId: Long) = viewModelScope.launch {
-        val user = repo.getUserById(userId)
-        _currentUser.postValue(user)
+    fun loadById(userId: Long) {
+        viewModelScope.launch {
+            val user = repo.getUserById(userId)
+            _currentUser.postValue(user)
+        }
     }
 
     fun update(userName: String, email: String, password: String) = viewModelScope.launch {
@@ -30,7 +32,7 @@ class EditUserViewModel(private val repo: UserRepository): ViewModel(){
         }
     }
 
-    fun logout() = viewModelScope.launch {
+    fun delete() = viewModelScope.launch {
         _currentUser.value?.let {
             repo.delete(it)
         }

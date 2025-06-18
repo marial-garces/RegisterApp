@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import com.example.registerapp.database.UserDatabase
 import com.example.registerapp.database.UserRepository
 import com.example.registerapp.database.viewModels.AuthViewModels
+import com.example.registerapp.screens.Routes.DASHBOARD
 import com.example.registerapp.screens.Routes.EDIT_USER
 import com.example.registerapp.screens.Routes.LOGIN
 
@@ -72,9 +73,8 @@ fun LoginScreen(
     loginResult.value?.let { result ->
         if (result.isSuccess) {
             val user = result.getOrNull()!!
-            navController.navigate("EDIT_USER/${user.userId}"){
-                popUpTo(LOGIN){inclusive = true }
-            }
+            navController.currentBackStackEntry?.savedStateHandle?.set("user", user)
+            navController.navigate(DASHBOARD)
         } else {
             Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
         }

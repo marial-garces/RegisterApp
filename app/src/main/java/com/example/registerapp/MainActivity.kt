@@ -48,34 +48,17 @@ class MainActivity : AppCompatActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = DASHBOARD,
+                    startDestination = WELCOME,
                     builder = {
-                        composable(WELCOME) {
-                            WelcomeScreen(
-                                navController = navController,
-                            )
-                        }
-                        composable(LOGIN) {
-                            LoginScreen(
-                                navController = navController,
-                            )
-                        }
-                        composable(REGISTER) {
-                            RegisterScreen(
-                                navController = navController,
-                            )
-                        }
-                        composable(
-                            route = "$EDIT_USER/{userId}",
-                            arguments = listOf(navArgument("userId") { type = NavType.LongType })
-                        ) {backStackEntry ->
-                            val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
-                            EditUserScreen(navController = navController,userId = userId)
-                        }
-                        composable(DASHBOARD) {
-                            DashboardScreen(
-                                navController = navController)
-                        }
+                        composable(WELCOME) { WelcomeScreen(navController = navController) }
+
+                        composable(LOGIN) { LoginScreen(navController = navController) }
+
+                        composable(REGISTER) { RegisterScreen(navController = navController) }
+
+                        composable(EDIT_USER) { EditUserScreen(navController = navController) }
+
+                        composable(DASHBOARD) { DashboardScreen(navController = navController) }
 
                     }
                 )

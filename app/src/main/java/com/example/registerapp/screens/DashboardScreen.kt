@@ -1,50 +1,30 @@
 package com.example.registerapp.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.registerapp.database.User
 import com.example.registerapp.screens.Routes.DASHBOARD
 import com.example.registerapp.screens.Routes.EDIT_USER
 import com.example.registerapp.screens.design.EmployeeCard
-
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,15 +32,20 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    val savedUser = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.get<User>("user")
+
+    val user = remember { mutableStateOf<User?>(savedUser) }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(
-                drawerContainerColor = Color(0xFFCCC2DC),
-            ) {
-                DrawerContent(navController = navController)
+            ModalDrawerSheet(drawerContainerColor = Color(0xFFE2DBF1)) {
+                DrawerContent(navController = navController, user = user.value)
             }
         },
         gesturesEnabled = true,
@@ -71,29 +56,27 @@ fun DashboardScreen(
                 val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
                     state = rememberTopAppBarState()
                 )
-                   TopBar(
-                       scrollBehavior = scrollBehavior,
-                       onOpenDrawer = {
-                           scope.launch{
-                               drawerState.apply {
-                                   if (isClosed) drawerState.open() else drawerState.close()
-                               }
-                           }
-                       },
-                   )
+                TopBar(
+                    scrollBehavior = scrollBehavior,
+                    userName = user.value?.userName ?: "Loading...",
+                    onOpenDrawer = {
+                        scope.launch {
+                            if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                        }
+                    },
+                    navController = navController,
+                    user = user.value
+                )
             },
             containerColor = Color(0xFFCCC2DC),
-
         ) { paddingValues ->
             ScreenContent(paddingValues = paddingValues)
         }
-
     }
-
 }
 
 @Composable
-fun DrawerContent(navController: NavController){
+fun DrawerContent(navController: NavController, user: User?) {
     Text(
         text = "Menu",
         fontSize = 28.sp,
@@ -106,58 +89,48 @@ fun DrawerContent(navController: NavController){
 
     NavigationDrawerItem(
         label = {
-            Text("Account",
-            fontSize = 17.sp,
-            modifier = Modifier.padding(16.dp))
-                },
+            Text("Account", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        },
         selected = false,
-        onClick = { navController.navigate(EDIT_USER) },
+        onClick = {
+            navController.currentBackStackEntry?.savedStateHandle?.set("user", user)
+            navController.navigate(EDIT_USER)
+        },
         icon = {
-            Icon(Icons.Default.AccountCircle,
-                contentDescription = "Account")
+            Icon(Icons.Default.AccountCircle, contentDescription = "Account")
         }
     )
 
     NavigationDrawerItem(
         label = {
-            Text("Home",
-                fontSize = 17.sp,
-                modifier = Modifier.padding(16.dp))
-                },
+            Text("Home", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        },
         selected = false,
-        onClick = { navController.navigate(DASHBOARD) },
+        onClick = {
+            navController.navigate(DASHBOARD)
+        },
         icon = {
-            Icon(Icons.Default.House,
-                contentDescription = "Home")
+            Icon(Icons.Default.House, contentDescription = "Home")
         }
     )
-
 }
 
-
 @Composable
-fun ScreenContent(paddingValues: PaddingValues){
-
+fun ScreenContent(paddingValues: PaddingValues) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = paddingValues.calculateTopPadding())
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxSize(),
-//                .padding(top = 0.dp), // Espacio desde el top bar
+            modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFE2DBF1)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(
-                    top = 18.dp,
-                    bottom = 16.dp
-                ),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(top = 18.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 item {
@@ -172,19 +145,23 @@ fun ScreenContent(paddingValues: PaddingValues){
                     )
                 }
 
-                items(count = 10) { index ->
+                items(count = 10) {
                     EmployeeCard()
                 }
             }
         }
     }
-
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun TopBar(onOpenDrawer: () -> Unit, scrollBehavior: TopAppBarScrollBehavior) {
+fun TopBar(
+    onOpenDrawer: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
+    userName: String,
+    user: User?,
+    navController: NavController
+) {
     TopAppBar(
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFCCC2DC)),
@@ -195,44 +172,73 @@ fun TopBar(onOpenDrawer: () -> Unit, scrollBehavior: TopAppBarScrollBehavior) {
                 modifier = Modifier
                     .padding(start = 18.dp, end = 8.dp)
                     .size(28.dp)
-                    .clickable {
-                        onOpenDrawer()
-                    }
+                    .clickable { onOpenDrawer() }
             )
         },
         title = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 12.dp),
-                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .padding(vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "Welcome,",
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = "UserName!",
+                    text = "$userName!",
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    modifier = Modifier.fillMaxWidth()
                 )
-
             }
-                },
+        },
         actions = {
-            Icon(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = "Account",
+            IconButton(
+                onClick = {
+                    navController.currentBackStackEntry?.savedStateHandle?.set("user", user)
+                    navController.navigate(EDIT_USER)
+                },
                 modifier = Modifier
-                    .padding(start = 8.dp, end = 16.dp)
-                    .size(30.dp)
-            )
+                    .padding(horizontal = 16.dp)
+                    .size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Account"
+                )
+            }
         }
+    )
+}
+
+@Preview
+@Composable
+fun DashboardScreenPreview() {
+    DashboardScreen(
+        navController = NavController(LocalContext.current),
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun TopBarPreview() {
+    val mockUser = User(
+        userName = "marialaura", email = "m.garces21@gmail.com",
+        userId = 7,
+        password = "12345678"
+    )
+    TopBar(
+        onOpenDrawer = {},
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+        userName = mockUser.userName,
+        navController = NavController(LocalContext.current),
+        user = mockUser
     )
 }
