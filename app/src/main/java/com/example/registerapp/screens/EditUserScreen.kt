@@ -1,5 +1,6 @@
 package com.example.registerapp.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ import com.example.registerapp.database.viewModels.EditUserViewModel
 import com.example.registerapp.screens.Routes.LOGIN
 import com.example.registerapp.screens.Routes.WELCOME
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.registerapp.database.viewModels.UserManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,9 +47,7 @@ fun EditUserScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val user = navController.previousBackStackEntry
-        ?.savedStateHandle
-        ?.get<User>("user")
+    val currentUser = UserManager.currentUser
 
     val context = LocalContext.current.applicationContext
     val dao = UserDatabase.getInstance(context).userDao()
@@ -57,10 +57,20 @@ fun EditUserScreen(
         factory = EditUserViewModel.Factory(repo)
     )
 
-    var username by remember { mutableStateOf(user?.userName ?: "") }
-    var email by remember { mutableStateOf(user?.email ?: "") }
-    var password by remember { mutableStateOf(user?.password ?: "") }
+    var username by remember { mutableStateOf(currentUser?.userName ?: "") }
+    var email by remember { mutableStateOf(currentUser?.email ?: "") }
+    var password by remember { mutableStateOf(currentUser?.password ?: "") }
     var showPassword by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(currentUser){
+        currentUser?.let {user ->
+            username = user.userName
+            email = user.email
+            password = user.password
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -102,16 +112,6 @@ fun EditUserScreen(
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Welcome!",
-                fontWeight = FontWeight.Bold,
-                fontSize = 42.sp,
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                color = Color(0xFF332D41)
-            )
 
             Image(
                 painter = painterResource(id = R.drawable.profile_icon),
@@ -177,10 +177,15 @@ fun EditUserScreen(
                     .padding(horizontal = 60.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6570cd)),
                 onClick = {
-                    user?.let {
-                        val updated = it.copy(userName = username, email = email, password = password)
-                        editVm.update(updated.userName, updated.email, updated.password)
-                        navController.previousBackStackEntry?.savedStateHandle?.set("user", updated)
+                    currentUser?.let {user ->
+                        val updatedUser = user.copy(
+                            userName = username,
+                            email = email,
+                            password = password
+                        )
+                        editVm.update(username, email, password)
+                        UserManager.updateCurrentUser(updatedUser)
+                        Toast.makeText(context, "Changes saved", Toast.LENGTH_SHORT).show()
                     }
                 }
             ) {
@@ -198,11 +203,14 @@ fun EditUserScreen(
                     .padding(horizontal = 120.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF616691)),
                 onClick = {
+                    UserManager.clearCurrentUser()
                     navController.navigate(LOGIN) { popUpTo(0) }
                 }
             ) {
                 Text("Log Out", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             }
+
+
 
             TextButton(
                 modifier = Modifier
@@ -210,6 +218,7 @@ fun EditUserScreen(
                     .padding(horizontal = 70.dp, vertical = 8.dp),
                 onClick = {
                     editVm.delete()
+                    UserManager.clearCurrentUser()
                     navController.navigate(LOGIN) { popUpTo(0) }
                 }
             ) {

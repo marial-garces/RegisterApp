@@ -19,8 +19,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.registerapp.database.User
+import com.example.registerapp.database.api.EmployeesUiState
+import com.example.registerapp.database.api.EmployeesViewModel
+import com.example.registerapp.database.viewModels.UserManager
 import com.example.registerapp.screens.Routes.DASHBOARD
 import com.example.registerapp.screens.Routes.EDIT_USER
 import com.example.registerapp.screens.design.EmployeeCard
@@ -30,13 +34,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    employeeViewModel: EmployeesViewModel  = viewModel()
 ) {
-    val savedUser = navController.currentBackStackEntry
-        ?.savedStateHandle
-        ?.get<User>("user")
-
-    val user = remember { mutableStateOf<User?>(savedUser) }
+    val currentUser = UserManager.currentUser
+    val uiState by employeeViewModel.uiState.collectAsState()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -45,7 +47,7 @@ fun DashboardScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = Color(0xFFE2DBF1)) {
-                DrawerContent(navController = navController, user = user.value)
+                DrawerContent(navController = navController, user = currentUser)
             }
         },
         gesturesEnabled = true,
@@ -58,19 +60,24 @@ fun DashboardScreen(
                 )
                 TopBar(
                     scrollBehavior = scrollBehavior,
-                    userName = user.value?.userName ?: "Loading...",
+                    userName = currentUser?.userName ?: "Loading...",
                     onOpenDrawer = {
                         scope.launch {
                             if (drawerState.isClosed) drawerState.open() else drawerState.close()
                         }
                     },
                     navController = navController,
-                    user = user.value
+                    user = currentUser,
+//                    onRefesh = { employeeViewModel.retryLoading() }
                 )
             },
             containerColor = Color(0xFFCCC2DC),
         ) { paddingValues ->
-            ScreenContent(paddingValues = paddingValues)
+            ScreenContent(
+                paddingValues = paddingValues,
+                uiState = uiState,
+                onRetry = { employeeViewModel.retryLoading() }
+            )
         }
     }
 }
@@ -93,7 +100,6 @@ fun DrawerContent(navController: NavController, user: User?) {
         },
         selected = false,
         onClick = {
-            navController.currentBackStackEntry?.savedStateHandle?.set("user", user)
             navController.navigate(EDIT_USER)
         },
         icon = {
@@ -116,7 +122,11 @@ fun DrawerContent(navController: NavController, user: User?) {
 }
 
 @Composable
-fun ScreenContent(paddingValues: PaddingValues) {
+fun ScreenContent(
+    paddingValues: PaddingValues,
+    uiState: EmployeesUiState,
+    onRetry: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -129,26 +139,37 @@ fun ScreenContent(paddingValues: PaddingValues) {
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 18.dp, bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
+                ) {
                 item {
-                    Text(
-                        text = "Employees",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1A1A1A),
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 8.dp),
-                    )
-                }
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Employees",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1A1A1A)
+                        )
 
-                items(count = 10) {
-                    EmployeeCard()
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp,
+                                color = Color(0xFF6750A4)
+                            )
+                        }
+                    }
                 }
             }
+
         }
     }
 }
@@ -190,7 +211,7 @@ fun TopBar(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = "$userName!",
+                    text = "${userName}!",
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
@@ -201,7 +222,6 @@ fun TopBar(
         actions = {
             IconButton(
                 onClick = {
-                    navController.currentBackStackEntry?.savedStateHandle?.set("user", user)
                     navController.navigate(EDIT_USER)
                 },
                 modifier = Modifier
